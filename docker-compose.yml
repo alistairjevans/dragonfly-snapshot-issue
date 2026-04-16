@@ -1,0 +1,21 @@
+version: "3"
+
+services:
+  dragonfly:
+    image: docker.dragonflydb.io/dragonflydb/dragonfly:v1.37.2
+    ports:
+      - "6380:6379"
+    # Disable automatic snapshots so we control when they happen
+    command: >
+      dragonfly
+      --dbfilename=dump
+      --dir=/data
+      --df_snapshot_format
+      --proactor_threads=14      
+    volumes:
+      - dragonfly-data:/data
+    ulimits:
+      memlock: -1
+
+volumes:
+  dragonfly-data:
