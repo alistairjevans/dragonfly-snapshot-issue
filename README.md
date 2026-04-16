@@ -3,15 +3,6 @@
 Reproduces the issue where DragonflyDB freezes during snapshots when a single
 hash key holds millions of fields. See [dragonflydb/dragonfly#5625](https://github.com/dragonflydb/dragonfly/issues/5625).
 
-## Background
-
-DragonflyDB uses a forkless, per-shard snapshot architecture. Each shard thread
-serializes its own data at bucket granularity. Unlike Redis (which forks and
-uses copy-on-write), Dragonfly serializes inline on the event loop threads.
-
-When a single key is extremely large, the shard owning that key blocks its
-event loop during serialization — freezing all commands routed to that shard.
-
 ## Steps
 
 ### 1. Start DragonflyDB
