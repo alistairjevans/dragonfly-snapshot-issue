@@ -32,9 +32,9 @@ ruby populate_hash.rb
 ```
 
 Creates a mixed dataset of hashes at three tiers:
-- **50,000** small hashes with 500 fields each
-- **10,000** medium hashes with 10,000 fields each
-- **100** large hashes with 5,000,000 fields each
+- **5,000** small hashes with 500 fields each
+- **1,000** medium hashes with 10,000 fields each
+- **1** large hash with 5,000,000 fields
 
 The large hashes are what trigger the freeze — each one dominates a shard's
 serialization time during snapshot.
