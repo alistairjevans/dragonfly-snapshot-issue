@@ -11,9 +11,8 @@ hash key holds millions of fields. See [dragonflydb/dragonfly#5625](https://gith
 docker compose up -d
 ```
 
-Uses the Dragonfly-native snapshot format (`--df_snapshot_format`) with 2
-proactor threads so the freeze is easier to observe (fewer shards = higher
-chance the giant key dominates one).
+Uses the Dragonfly-native snapshot format (`--df_snapshot_format`) with 14
+proactor threads; still locks up ~all threads.
 
 ### 2. Populate the giant hash
 
