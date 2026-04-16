@@ -82,17 +82,31 @@ bgsave_start = Process.clock_gettime(Process::CLOCK_MONOTONIC) - epoch
 puts "Triggering BGSAVE at #{Time.now.strftime("%H:%M:%S")}..."
 r_cmd.bgsave
 
-# Wait for save to finish (DFS-specific fields)
+# Wait for save to start, then finish (DFS-specific fields)
+save_detected = false
 loop do
   info = r_cmd.info("persistence")
-  break if info["saving"].to_i == 0
+  saving = info["saving"].to_i
 
-  pct = info["current_snapshot_perc"].to_i
-  keys_done = info["current_save_keys_processed"].to_i
-  keys_total = info["current_save_keys_total"].to_i
-  elapsed = Process.clock_gettime(Process::CLOCK_MONOTONIC) - epoch - bgsave_start
-  printf("\r  Saving... %d%% (%s / %s keys) [%.1fs]", pct, fmt(keys_done), fmt(keys_total), elapsed)
-  sleep 0.5
+  if !save_detected && saving == 1
+    save_detected = true
+  elsif save_detected && saving == 0
+    break
+  elsif !save_detected
+    # Also check rdb_bgsave_in_progress as fallback
+    if info["rdb_bgsave_in_progress"].to_i == 1
+      save_detected = true
+    end
+  end
+
+  if save_detected
+    pct = info["current_snapshot_perc"].to_i
+    keys_done = info["current_save_keys_processed"].to_i
+    keys_total = info["current_save_keys_total"].to_i
+    elapsed = Process.clock_gettime(Process::CLOCK_MONOTONIC) - epoch - bgsave_start
+    printf("\r  Saving... %d%% (%s / %s keys) [%.1fs]", pct, fmt(keys_done), fmt(keys_total), elapsed)
+  end
+  sleep 0.2
 end
 puts
 

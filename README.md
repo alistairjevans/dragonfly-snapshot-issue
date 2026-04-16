@@ -41,63 +41,66 @@ statistics. A freeze shows up as a max latency spike in the seconds range.
 # Example: 
 
 ```
+ alistair@Alistairs-MacBook-Pro  ~/scratch/dragonfly-snapshot-issue   main ±  ruby trigger_and_measure.rb
 large_hash:0 has 5,000,000 fields
 Dataset: 5k small hashes (500 fields), 1k medium (10k fields), 1 large (5M fields)
 
 Collecting baseline for 5s...
-Triggering BGSAVE at 12:31:06...
-  Saving... 98% (5,940 / 6,001 keys) [12.8s]
+Triggering BGSAVE at 15:29:49...
+  Saving... 100% (6,001 / 6,001 keys) [14.4s]
 
   HSET latency over time (log scale, ms)
 
-       10s │                    ███                                                    │    
-           │                    │                                                      │    
-           │                    │                                                      │    
-           │                    │                                                      │    
-           │                    │                                        ██            │    
-        1s │                    │                                          █           │    
-           │                    │                                                      │    
-           │                    │                                                      │    
-           │                    │                                                      │    
-           │                    │                                                     █│    
-     100ms │                    │                                                █     │    
-           │     █              │                                                 ███  │    
-       p99 │┄┄┄┄┄┄┄┄┄┄┄█┄┄┄┄┄┄┄┄│┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄██┄┄┄┄█┄│┄┄┄┄
-           │      █             │                                                      │    
-      10ms │    █    █          │                                                      │ █  
-           │            █       │                                                      │█   
-           │  █    █            │                                                      █    
-           │██ █      █  ██  █  │                                                      │    
-           │        █      ██  █│                                                      │  ██
-       1ms │                  █ │                                                      │    
-           │                    │                                                      │    
-       p50 │────────────────────│──────────────────────────────────────────────────────│────
-           │                    │                                                      │    
-           │                    │                                                      │    
-     0.1ms │                    │                                                      │    
-           └────────────────────┴──────────────────────────────────────────────────────┴────
-            0.0s              4.8s                9.7s                14.5s                 
-                              SAVE                                                   DONE   
+       10s │                   ██                                                      │    
+           │                   │                                                       │    
+           │                   │                                                       │    
+           │                   │                                     ██                │    
+           │                   │                                                       │    
+        1s │                   │                                                       │    
+           │                   │                                                       │    
+           │                   │                                                       │    
+           │                   │                                                  █    │    
+           │                   │                                                      █│    
+     100ms │                   │                                                █  █   │    
+           │                   │                                               █ █  ██ █    
+       p99 │┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄│┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄┄│┄┄┄┄
+           │                   │                                                       │    
+      10ms │█                  │                                                       │    
+           │ █ ██              │                                                       │  ██
+           │  █  ██   █  █     │                                                       │ █  
+           │        ██  █     █│                                                       │    
+           │       █   █  ████ │                                                       │█   
+       1ms │                   │                                                       │    
+           │                   │                                                       │    
+       p50 │───────────────────│───────────────────────────────────────────────────────│────
+           │                   │                                                       │    
+           │                   │                                                       │    
+     0.1ms │                   │                                                       │    
+           └───────────────────┴───────────────────────────────────────────────────────┴────
+            0.0s              5.2s                10.3s               15.5s                 
+                             SAVE                                                    DONE   
 
-            │ BGSAVE start/end   ─ p50 (0.40ms)   ┄ p99 (30.80ms)
+            │ BGSAVE start/end   ─ p50 (0.41ms)   ┄ p99 (36.36ms)
 
             Baseline: first 5.0s before SAVE
 
 ============================================================
-BGSAVE completed in 13.34s
+BGSAVE completed in 14.64s
 
                         Baseline     During save
   ------------------------------------------------
-  Writes:              7528            1769
-  Duration:             5.0s           13.3s
-  Throughput:         1504/s           133/s  (91% drop)
+  Writes:              7743            1620
+  Duration:             5.0s           14.6s
+  Throughput:         1547/s           111/s  (93% drop)
   ------------------------------------------------
-  Median (p50):      0.39 ms         0.73 ms
-  P99:               4.30 ms      1165.14 ms
-  Max:              41.72 ms     10012.62 ms
+  Median (p50):      0.40 ms         0.69 ms
+  P99:               3.74 ms      2475.75 ms
+  Max:              13.64 ms     10011.86 ms
 
-Freezes (>22ms): 174
-  Longest freeze: 10013 ms
-  Total freeze time: 118454 ms
+Freezes (>19ms): 231
+  Longest freeze: 10012 ms
+  Total freeze time: 133362 ms
 ============================================================
+
+*** FREEZE DETECTED: server blocked for 10012ms during snapshot ***
 ```
